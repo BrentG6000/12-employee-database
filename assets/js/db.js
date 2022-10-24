@@ -5,34 +5,80 @@ class DB {
     }
 
     // Find all employees
-    // THIS IS NOT THE FINAL QUERY. YOU WILL NEED TO MODIFY THIS QUERY SO THAT YOU JOIN 
-    // THE EMPLOYEES WITH THEIR ROLES, SALARIES, DEPARTMENTS, AND MANAGERS
-    // HINT: A TABLE CAN BE JOINED ON ITSELF WITH PROPER TABLE ALIASING
-
     findAllEmployees() {
         return this.connection.promise().query(
             `SELECT employ.id AS "ID", employ.first_name AS "First Name", employ.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", CONCAT(manager.first_name, ' ', manager.last_name) AS "Manager"
-FROM employee employ
-JOIN role ON employ.role_id = role.id
-JOIN department ON role.department_id = department.id
-LEFT OUTER JOIN employee manager ON employ.manager_id = manager.id;`
+             FROM employee employ
+             JOIN role ON employ.role_id = role.id
+             JOIN department ON role.department_id = department.id
+             LEFT OUTER JOIN employee manager ON employ.manager_id = manager.id;`
         );
     }
 
-    // Add more class methods below for all the database operations needed.
     // Sometimes you may need to pass an id value into a method so it knows 
     //   how to find the correct record.
     
     findAllDepartments() {
         return this.connection.promise().query(
-            "SELECT * FROM department;"
+            `SELECT department.id AS "ID", department.name AS "Department"
+             FROM employees.department;`
         );
     }
 
     findAllRoles() {
         return this.connection.promise().query(
-            "SELECT * FROM role;"
+            `SELECT role.title AS "Title", role.id AS "ID", department.name AS "Department", role.salary AS "Salary" 
+             FROM employees.role
+             JOIN department ON role.department_id = department.id`
         );
+    }
+    
+    addDepartment(name) {
+        return this.connection.promise().query(
+            `INSERT INTO department (name)
+             VALUES ('${name.department}')`
+        );
+    }
+
+    addNewRole(role) {
+
+        return this.connection.promise().query(
+            `INSERT INTO role (title, salary, department_id)
+             VALUES ('${ role.name }', '${role.salary}', '${role.department}')`
+        );
+    }
+
+    addEmployee(name) {
+        return this.connection.promise().query(
+            `INSERT INTO department (name)
+             VALUES ('${name.department}')`
+        );
+    }
+
+    findAllManagers() {
+        let results = this.connection.promise().query(
+            `SELECT CONCAT(manager.first_name, ' ', manager.last_name) AS "Manager"
+             FROM employee employ
+             JOIN role ON employ.role_id = role.id
+             JOIN department ON role.department_id = department.id
+             JOIN employee manager ON employ.manager_id = manager.id;`
+        );
+        let managers = [];
+        let double = false;
+        for (let i = 0; i < results.length; i++) {
+            for (let j = i + 1; j < results.lenght; j++) {
+                if (results[i].manager == results[j].manager) {
+                    double = true;
+                }
+            }
+            if (!double) {
+                managers.push(results[i].manager);
+            }
+            else {
+                double = false;
+            }
+        }
+        return managers;
     }
 }
 

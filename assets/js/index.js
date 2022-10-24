@@ -25,23 +25,131 @@ function viewRoles() {
     // we get the result back, and then display the result 
     employeesDb.findAllRoles()
         .then(([rows]) => {
-            let employees = rows;
+            let roles = rows;
             console.log("\n");
-            console.table(employees);
+            console.table(roles);
         })
         .then(() => loadMainPrompts());
 }
 
 function viewDepartments() {
-    // Here we call the method in the db file for finding all employees.
+    // Here we call the method in the db file for finding all departments.
     // we get the result back, and then display the result 
     employeesDb.findAllDepartments()
         .then(([rows]) => {
-            let employees = rows;
+            let departments = rows;
             console.log("\n");
-            console.table(employees);
+            console.table(departments);
         })
         .then(() => loadMainPrompts());
+}
+
+function addDepart() {
+    prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What is the name of the new department?:'
+        }
+    ])
+        .then(res => {
+        employeesDb.addDepartment(res)
+    })
+    .then(() => loadMainPrompts());
+}
+
+function addRole() {
+    employeesDb.findAllDepartments()
+        .then(([rows]) => {
+            let pickDept = [];
+            for (let i = 0; i < rows.length; i++) {
+                pickDept.push(rows[i].Department);
+            }
+            return pickDept;
+        })
+        .then(pickDept => {
+            prompt([
+                {
+                    type: 'input',
+                    name: 'name',
+                    message: 'What is the name of the new role?:'
+                },
+                {
+                    type: 'input',
+                    name: 'salary',
+                    message: 'What is the salary of the new role?:'
+                },
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'What department is the new role under?:',
+                    choices: pickDept
+                }
+            ]).then(res => {
+                for (let i = 0; i < pickDept.length; i++) {
+                    if (pickDept[i] == res.department) {
+                        res.department = i + 1;
+                    }
+                }
+                employeesDb.addNewRole(res);
+            }).then(() => loadMainPrompts());
+        })
+}
+
+function addEmployee() {
+    employeesDb.findAllRoles()
+        .then(([roleRows]) => {
+            let pickRole = [];
+            for (let i = 0; i < roleRows.length; i++) {
+                pickRole.push(roleRows[i].title);
+            }
+            return pickRole;
+        })
+        .then(pickRole => {
+            employeesDb.findAllManagers()
+            .then(([manRows]) => {
+                let pickMan = [];
+                for (let i = 0; i < manRows.length; i++) {
+                    pickMan.push(manRows[i].title);
+                }
+                return pickMan;
+            })
+            .then((pickMan) => {
+                prompt([
+                    {
+                        type: 'input',
+                        name: 'firstName',
+                        message: 'What is the first name of the new employee?:'
+                    },
+                    {
+                        type: 'input',
+                        name: 'lastName',
+                        message: 'What is the last name of the new employee?:'
+                    },
+                    {
+                        type: 'list',
+                        name: 'role',
+                        message: 'What is the role of the new employee?:',
+                        choices: pickRole
+                    },
+                    {
+                        type: 'list',
+                        name: 'manager',
+                        message: 'Who is the manager of the new employee?:',
+                        choices: pickRole
+                    }
+
+                ])
+                .then(res => {
+                    for (let i = 0; i < pickDept.length; i++) {
+                        if (pickDept[i] == res.department) {
+                            res.department = i + 1;
+                        }
+                    }
+                    employeesDb.addNewRole(res);
+                }).then(() => loadMainPrompts());
+            })
+        })
 }
 
 // Here we load the initial prompts with a series of options. The first option is provided for you.
@@ -94,16 +202,16 @@ function loadMainPrompts() {
             case 'VIEW_DEPARTMENTS':
                 viewDepartments();
                 break;
-            case 'Add a department':
-                addDepartment();
+            case 'ADD_DEPARTMENT':
+                addDepart();
                 break;
-            case 'Add a role':
+            case 'ADD_ROLE':
                 addRole();
                 break;
-            case 'Add an employee':
+            case 'ADD_EMPLOYEE':
                 addEmployee();
                 break;
-            case 'Update an employee role':
+            case 'UPDATE_ROLE':
                 updateRole();
                 break;
             default:
@@ -112,38 +220,11 @@ function loadMainPrompts() {
     })
 }
 
-// function init() {
-//     inquirer
-//         .prompt(questions)
-//         .then((data) => {
-//             switch (data.option) {
-//                 case 'View all departments':
-//                     db.query(
-//                         'SELECT * FROM `department`',
-//                         function (err, results) {
-//                             if (err) {
-//                                 console.log("Error retrieving department table.");
-//                             }
-//                             else {
-//                                 const table = cTable.getTable('Departments', results);
-//                                 console.log(table);
-//                             }    
-//                         }
-//                     );
-//                     break;
-//         })
-// }
-
 function init() {
     loadMainPrompts()
 }
 
 init();
-// const questions = [{
-//     type: 'input',
-//     name: 'title',
-//     message: 'What is the title of your project?',
-// },
 
 /* 
 You will write lots of other functions here for the other prompt options.

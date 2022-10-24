@@ -41,44 +41,49 @@ class DB {
     }
 
     addNewRole(role) {
-
         return this.connection.promise().query(
             `INSERT INTO role (title, salary, department_id)
              VALUES ('${ role.name }', '${role.salary}', '${role.department}')`
         );
     }
 
-    addEmployee(name) {
+    addEmployee(employee) {
+        console.log(employee.firstName);
+        console.log(employee.lastName);
+        console.log(employee.role);
+        console.log(employee.manager);
         return this.connection.promise().query(
-            `INSERT INTO department (name)
-             VALUES ('${name.department}')`
+            `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+             VALUES ('${ employee.firstName }', '${ employee.lastName }', '${ employee.role }', ${ employee.manager })`  
         );
     }
 
     findAllManagers() {
-        let results = this.connection.promise().query(
+        return this.connection.promise().query(
             `SELECT CONCAT(manager.first_name, ' ', manager.last_name) AS "Manager"
              FROM employee employ
              JOIN role ON employ.role_id = role.id
              JOIN department ON role.department_id = department.id
              JOIN employee manager ON employ.manager_id = manager.id;`
         );
-        let managers = [];
-        let double = false;
-        for (let i = 0; i < results.length; i++) {
-            for (let j = i + 1; j < results.lenght; j++) {
-                if (results[i].manager == results[j].manager) {
-                    double = true;
-                }
-            }
-            if (!double) {
-                managers.push(results[i].manager);
-            }
-            else {
-                double = false;
-            }
-        }
-        return managers;
+        // let managers = [];
+        // let double = false;
+        // for (let i = 0; i < results.length; i++) {
+        //     for (let j = i + 1; j < results.lenght; j++) {
+        //         if (results[i].manager == results[j].manager) {
+        //             double = true;
+        //         }
+        //     }
+        //     if (!double) {
+        //         managers.push(results[i].manager);
+        //     }
+        //     else {
+        //         double = false;
+        //     }
+        // }
+        // return managers;
+        //console.log(managers);
+        //return results
     }
 }
 

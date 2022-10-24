@@ -97,24 +97,25 @@ function addRole() {
 }
 
 function addEmployee() {
+    let pickRole = []; 
+    let pickMan = [];
     employeesDb.findAllRoles()
         .then(([roleRows]) => {
-            let pickRole = [];
             for (let i = 0; i < roleRows.length; i++) {
-                pickRole.push(roleRows[i].title);
+                pickRole.push(roleRows[i].Title);
             }
             return pickRole;
         })
-        .then(pickRole => {
+        .then(() => {
             employeesDb.findAllManagers()
-            .then(([manRows]) => {
-                let pickMan = [];
-                for (let i = 0; i < manRows.length; i++) {
-                    pickMan.push(manRows[i].title);
-                }
-                return pickMan;
-            })
-            .then((pickMan) => {
+                .then(([manRows]) => {
+                    for (let i = 0; i < manRows.length; i++) {
+                        pickMan.push(manRows[i].Manager);
+                    }
+                    return pickMan;
+                })
+        })
+                .then(() => {
                 prompt([
                     {
                         type: 'input',
@@ -136,20 +137,24 @@ function addEmployee() {
                         type: 'list',
                         name: 'manager',
                         message: 'Who is the manager of the new employee?:',
-                        choices: pickRole
+                        choices: pickMan
                     }
 
                 ])
                 .then(res => {
-                    for (let i = 0; i < pickDept.length; i++) {
-                        if (pickDept[i] == res.department) {
-                            res.department = i + 1;
+                    for (let i = 0; i < pickMan.length; i++) {
+                        if (pickMan[i] == res.manager) {
+                            res.manager = i + 1;
                         }
                     }
-                    employeesDb.addNewRole(res);
+                    for (let i = 0; i < pickRole.length; i++) {
+                        if (pickRole[i] == res.role) {
+                            res.role = i + 1;
+                        }
+                    }
+                    employeesDb.addEmployee(res);
                 }).then(() => loadMainPrompts());
             })
-        })
 }
 
 // Here we load the initial prompts with a series of options. The first option is provided for you.

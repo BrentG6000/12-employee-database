@@ -15,6 +15,13 @@ class DB {
         );
     }
 
+    returnEmployeeList() {
+        return this.connection.promise().query(
+            `SELECT CONCAT(employee.first_name, ' ', employee.last_name) AS employee
+             FROM employee`
+        );
+    }
+
     // Sometimes you may need to pass an id value into a method so it knows 
     //   how to find the correct record.
     
@@ -67,7 +74,7 @@ class DB {
     updateRole(employee) {
         return this.connection.promise().query(
             `UPDATE employees.employee
-             SET first_name = '${employee.firstName}', last_name = '${employee.firstName}', role_id = ${employee.role}, manager_id = ${employee.manager}
+             SET role_id = ${employee.role}
              WHERE employee.id = ${employee.id};`
         )
     }

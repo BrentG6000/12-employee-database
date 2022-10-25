@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 
+// Setup for database connection
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'newuser',
@@ -7,6 +8,7 @@ const connection = mysql.createConnection({
     database: 'employees'
 });
 
+// Connect to database
 connection.connect(function (err) {
     if (err) throw err;
 });

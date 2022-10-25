@@ -4,7 +4,7 @@ class DB {
         this.connection = connection;   // here we reach out to the db so we can do a query
     }
 
-    // Find all employees
+    // Find all employees with managers from database
     findAllEmployees() {
         return this.connection.promise().query(
             `SELECT employ.id AS "ID", employ.first_name AS "First Name", employ.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", CONCAT(manager.first_name, ' ', manager.last_name) AS "Manager"
@@ -15,6 +15,7 @@ class DB {
         );
     }
 
+    // Find all employees without managers from database
     returnEmployeeList() {
         return this.connection.promise().query(
             `SELECT CONCAT(employee.first_name, ' ', employee.last_name) AS employee
@@ -22,9 +23,7 @@ class DB {
         );
     }
 
-    // Sometimes you may need to pass an id value into a method so it knows 
-    //   how to find the correct record.
-    
+    // Find all departments from database
     findAllDepartments() {
         return this.connection.promise().query(
             `SELECT department.id AS "ID", department.name AS "Department"
@@ -32,6 +31,7 @@ class DB {
         );
     }
 
+    // Find all roles from database
     findAllRoles() {
         return this.connection.promise().query(
             `SELECT role.title AS "Title", role.id AS "ID", department.name AS "Department", role.salary AS "Salary" 
@@ -40,6 +40,7 @@ class DB {
         );
     }
     
+    // Add a department to database
     addDepartment(name) {
         return this.connection.promise().query(
             `INSERT INTO department (name)
@@ -47,6 +48,7 @@ class DB {
         );
     }
 
+    // Add a role to database
     addNewRole(role) {
         return this.connection.promise().query(
             `INSERT INTO role (title, salary, department_id)
@@ -54,6 +56,7 @@ class DB {
         );
     }
 
+    // Add an employee to database
     addEmployee(employee) {
         return this.connection.promise().query(
             `INSERT INTO employee (first_name, last_name, role_id, manager_id)
@@ -61,6 +64,7 @@ class DB {
         );
     }
 
+    // Find all managers from database
     findAllManagers() {
         return this.connection.promise().query(
             `SELECT DISTINCT manager.id, CONCAT(manager.first_name, ' ', manager.last_name) AS "manager"
@@ -71,6 +75,7 @@ class DB {
         );
     }
 
+    // Update an employee role in database
     updateRole(employee) {
         return this.connection.promise().query(
             `UPDATE employees.employee

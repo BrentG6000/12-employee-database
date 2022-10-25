@@ -19,6 +19,7 @@ function viewEmployees() {
         .then(() => loadMainPrompts());
 }
 
+// Here is a function which handles the second prompt option: View all roles
 function viewRoles() {
     // Here we call the method in the db file for finding all roles.
     // we get the result back, and then display the result 
@@ -31,6 +32,7 @@ function viewRoles() {
         .then(() => loadMainPrompts());
 }
 
+// Here is a function which handles the third prompt option: View all departments
 function viewDepartments() {
     // Here we call the method in the db file for finding all departments.
     // we get the result back, and then display the result 
@@ -43,7 +45,9 @@ function viewDepartments() {
         .then(() => loadMainPrompts());
 }
 
+// Here is a function which handles the forth prompt option: Add a department
 function addDepart() {
+    // Here we ask the user what the new department name will be
     prompt([
         {
             type: 'input',
@@ -52,14 +56,18 @@ function addDepart() {
         }
     ])
         .then(res => {
+            // Here we call the method in the db file for adding a department to the department table
             employeesDb.addDepartment(res).then(() => loadMainPrompts());
     })
 }
 
+// Here is a function which handles the fifth prompt option: Add a role
 function addRole() {
+    // Here we call the method in the db file for finding all departments
     employeesDb.findAllDepartments()
         .then(([rows]) => {
             let pickDept = [];
+            // A for loop to save a list of departments to array pickDept
             for (let i = 0; i < rows.length; i++) {
                 pickDept.push(rows[i].Department);
             }
@@ -84,31 +92,38 @@ function addRole() {
                     choices: pickDept
                 }
             ]).then(res => {
+                // for loop that gets the correct department id from the department list
                 for (let i = 0; i < pickDept.length; i++) {
                     if (pickDept[i] == res.department) {
                         res.department = i + 1;
                     }
                 }
+                // Here we call the method in the db file for adding a role
                 employeesDb.addNewRole(res).then(() => loadMainPrompts());
             })
         })
 }
 
+// Here is a function which handles the sixth prompt option: Add an employee
 function addWorker() {
     let pickRole = []; 
     let pickMan = [];
     let managerList = [];
+    // Here we call the method in the db file for finding all roles
     employeesDb.findAllRoles()
         .then(([roleRows]) => {
+            // A for loop to add roles to array pickRole
             for (let i = 0; i < roleRows.length; i++) {
                 pickRole.push(roleRows[i].Title);
             }
             return pickRole;
         })
         .then(() => {
+            // Here we call the method in the db file for finding all managers
             employeesDb.findAllManagers()
                 .then(([manRows]) => {
                     managerList = manRows;
+                    // A for loop to add managers to array pickMan
                     for (let i = 0; i < manRows.length; i++) {
                         pickMan.push(manRows[i].manager);
                     }
@@ -140,38 +155,46 @@ function addWorker() {
                         }
                     ])
                         .then(res => {
+                            // for loop that gets the correct manager id from the manager list
                             for (let i = 0; i < pickMan.length; i++) {
                                 if (managerList[i].manager == res.manager) {  
                                     res.manager = managerList[i].id;
                                 }
                             }
+                            // for loop that gets the correct role id from the role list
                             for (let i = 0; i < pickRole.length; i++) {
                                 if (pickRole[i] == res.role) {
                                     res.role = i + 1;
                                 }
                             }
+                            // Here we call the method in the db file for adding an employee
                             employeesDb.addEmployee(res).then(() => {
                                 loadMainPrompts();
                             })
-        })
+                        })
         
                 })
-            })
+        })
 }
 
+// Here is a function which handles the seventh prompt option: Update an employee role
 function updateEmployeeRole() {
     let pickRole = [];
     let pickEmployee = [];
+    // Here we call the method in the db file for finding all roles
     employeesDb.findAllRoles()
         .then(([roleRows]) => {
+            // A for loop to add roles to array pickRole
             for (let i = 0; i < roleRows.length; i++) {
                 pickRole.push(roleRows[i].Title);
             }
             return pickRole;
         })
         .then(() => {
+            // Here we call the method in the db file for finding all employees
             employeesDb.returnEmployeeList()
                 .then(([employRows]) => {
+                    // A for loop to add employees to array pickEmployee
                     for (let i = 0; i < employRows.length; i++) {
                         pickEmployee.push(employRows[i].employee);
                     }
@@ -193,16 +216,19 @@ function updateEmployeeRole() {
                         }
                     ])
                         .then(res => {
+                            // for loop that gets the correct role id from the role list
                             for (let i = 0; i < pickRole.length; i++) {
                                 if (pickRole[i] == res.role) {
                                     res.role = i + 1;
                                 }
                             }
+                            // for loop that gets the correct employee id from the employee list
                             for (let i = 0; i < pickEmployee.length; i++) {
                                 if (pickEmployee[i] == res.id) {
                                     res.id = i + 1;
                                 }
                             }
+                            // Here we call the method in the db file for updating an employee role
                             employeesDb.updateRole(res).then(() => {
                                 loadMainPrompts();
                             });
@@ -213,14 +239,14 @@ function updateEmployeeRole() {
                 })
 }
 
-// Here we load the initial prompts with a series of options. The first option is provided for you.
+// Here we load the initial prompts with a series of options.
 function loadMainPrompts() {
     prompt([
         {
             type: "list",
             name: "choice",
             message: "What would you like to do?",
-            choices: [
+        choices:[
                 {
                     name: "View All Employees",
                     value: "VIEW_EMPLOYEES"
@@ -282,7 +308,7 @@ function loadMainPrompts() {
 }
 
 function init() {
-    loadMainPrompts()
+    loadMainPrompts();
 }
 
 init();

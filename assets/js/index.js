@@ -3,7 +3,6 @@ const cTable = require('console.table');
 const connection = require("./connection");
 const db  = require("./db");
 const { prompt } = require("inquirer");
-//const logo = require("asciiart-logo");
 
 let employeesDb = new db(connection);
 
@@ -53,9 +52,8 @@ function addDepart() {
         }
     ])
         .then(res => {
-        employeesDb.addDepartment(res)
+            employeesDb.addDepartment(res).then(() => loadMainPrompts());
     })
-    .then(() => loadMainPrompts());
 }
 
 function addRole() {
@@ -91,14 +89,15 @@ function addRole() {
                         res.department = i + 1;
                     }
                 }
-                employeesDb.addNewRole(res);
-            }).then(() => loadMainPrompts());
+                employeesDb.addNewRole(res).then(() => loadMainPrompts());
+            })
         })
 }
 
 function addWorker() {
     let pickRole = []; 
     let pickMan = [];
+    let managerList = [];
     employeesDb.findAllRoles()
         .then(([roleRows]) => {
             for (let i = 0; i < roleRows.length; i++) {
@@ -109,14 +108,13 @@ function addWorker() {
         .then(() => {
             employeesDb.findAllManagers()
                 .then(([manRows]) => {
+                    managerList = manRows;
                     for (let i = 0; i < manRows.length; i++) {
-                        pickMan.push(manRows[i].Manager);
+                        pickMan.push(manRows[i].manager);
                     }
-                    console.log(pickMan);
                     return pickMan;
                 })
                 .then(() => {
-                    console.log(pickRole);
                     prompt([
                         {
                             type: 'input',
@@ -140,12 +138,11 @@ function addWorker() {
                             message: 'Who is the manager of the new employee?:',
                             choices: pickMan
                         }
-
                     ])
                         .then(res => {
                             for (let i = 0; i < pickMan.length; i++) {
-                                if (pickMan[i] == res.manager) {
-                                    res.manager = i + 1;
+                                if (managerList[i].manager == res.manager) {  
+                                    res.manager = managerList[i].id;
                                 }
                             }
                             for (let i = 0; i < pickRole.length; i++) {
@@ -155,6 +152,7 @@ function addWorker() {
                             }
                             employeesDb.addEmployee(res).then(() => {
                                 loadMainPrompts();
+                            })
         })
         
                 })
@@ -288,9 +286,3 @@ function init() {
 }
 
 init();
-
-/* 
-You will write lots of other functions here for the other prompt options.
-Note that some prompts will require you to provide more prompts, and these 
-may need functions of their own.
- */

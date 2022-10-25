@@ -57,13 +57,13 @@ class DB {
     addEmployee(employee) {
         return this.connection.promise().query(
             `INSERT INTO employee (first_name, last_name, role_id, manager_id)
-             VALUES ('${ employee.firstName }', '${ employee.lastName }', '${ employee.role }', ${ employee.manager })`  
+             VALUES ('${ employee.firstName }', '${ employee.lastName }', '${ employee.role }', '${ employee.manager }')`  
         );
     }
 
     findAllManagers() {
         return this.connection.promise().query(
-            `SELECT CONCAT(manager.first_name, ' ', manager.last_name) AS "Manager"
+            `SELECT DISTINCT manager.id, CONCAT(manager.first_name, ' ', manager.last_name) AS "manager"
              FROM employee employ
              JOIN role ON employ.role_id = role.id
              JOIN department ON role.department_id = department.id

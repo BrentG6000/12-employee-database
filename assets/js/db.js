@@ -48,10 +48,6 @@ class DB {
     }
 
     addEmployee(employee) {
-        console.log(employee.firstName);
-        console.log(employee.lastName);
-        console.log(employee.role);
-        console.log(employee.manager);
         return this.connection.promise().query(
             `INSERT INTO employee (first_name, last_name, role_id, manager_id)
              VALUES ('${ employee.firstName }', '${ employee.lastName }', '${ employee.role }', ${ employee.manager })`  
@@ -66,24 +62,14 @@ class DB {
              JOIN department ON role.department_id = department.id
              JOIN employee manager ON employ.manager_id = manager.id;`
         );
-        // let managers = [];
-        // let double = false;
-        // for (let i = 0; i < results.length; i++) {
-        //     for (let j = i + 1; j < results.lenght; j++) {
-        //         if (results[i].manager == results[j].manager) {
-        //             double = true;
-        //         }
-        //     }
-        //     if (!double) {
-        //         managers.push(results[i].manager);
-        //     }
-        //     else {
-        //         double = false;
-        //     }
-        // }
-        // return managers;
-        //console.log(managers);
-        //return results
+    }
+
+    updateRole(employee) {
+        return this.connection.promise().query(
+            `UPDATE employees.employee
+             SET first_name = '${employee.firstName}', last_name = '${employee.firstName}', role_id = ${employee.role}, manager_id = ${employee.manager}
+             WHERE employee.id = ${employee.id};`
+        )
     }
 }
 

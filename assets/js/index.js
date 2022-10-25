@@ -157,6 +157,20 @@ function addEmployee() {
             })
 }
 
+function updateEmployee() {
+    prompt([
+        {
+            type: 'input',
+            name: 'update',
+            message: "What is the name of the employee's new role?:"
+        }
+    ])
+        .then(res => {
+            employeesDb.updateRole(res);
+        })
+        .then(() => loadMainPrompts());
+}
+
 // Here we load the initial prompts with a series of options. The first option is provided for you.
 function loadMainPrompts() {
     prompt([
